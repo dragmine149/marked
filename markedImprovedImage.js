@@ -3,7 +3,7 @@ function markedImprovedImage(useRemote) {
     image(tokens) {
       return `
       <div class="img">
-        <img src="${useRemote ? `${useRemote}/{tokens.href}` : tokens.href}", alt="${tokens.text}">
+        <img src="${useRemote ? `${useRemote}/${tokens.href}` : tokens.href}", alt="${tokens.text}">
       </div>
       `
     }
