@@ -20,7 +20,7 @@ function markedLocalTime() {
   addRule('D', (d) => d.format('DD MMMM YYYY'));
   addRule('f', (d) => d.format('DD MMMM YYYY [at] HH:mm'));
   addRule('F', (d) => d.format('dddd DD MMMM YYYY [at] HH:mm'));
-  addRule('R', (d) => dayjs().isBefore(d) ? d.fromNow() : d.toNow());
+  addRule('R', (d) => dayjs().isBefore(d) ? d.toNow() : d.fromNow());
 
   /**
    * Formats a timestamp using specified format rule
