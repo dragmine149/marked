@@ -1,4 +1,10 @@
-function markedLocalTime() {
+function markedLocalTime(local_dayjs) {
+  // console.log('dayjs: ', local_dayjs);
+  // console.log('dayjs: ', typeof dayjs);
+  let this_dayjs = local_dayjs === undefined ? dayjs : local_dayjs;
+  // let this_dayjs = typeof dayjs == "undefined" ? local_dayjs : dayjs;
+  // console.log('dayjs: ', this_dayjs);
+
   let rule = '';
   let conditions = {};
 
@@ -20,7 +26,7 @@ function markedLocalTime() {
   addRule('D', (d) => d.format('DD MMMM YYYY'));
   addRule('f', (d) => d.format('DD MMMM YYYY [at] HH:mm'));
   addRule('F', (d) => d.format('dddd DD MMMM YYYY [at] HH:mm'));
-  addRule('R', (d) => dayjs().isBefore(d) ? d.toNow() : d.fromNow());
+  addRule('R', (d) => this_dayjs().isBefore(d) ? d.toNow() : d.fromNow());
 
   /**
    * Formats a timestamp using specified format rule
@@ -45,7 +51,7 @@ function markedLocalTime() {
         return (match) ? {
           type: 'localtime',
           raw: match[0],
-          time: dayjs(Number(match[1]) * 1000),
+          time: this_dayjs(Number(match[1]) * 1000),
           format: match[3] == undefined ? 'f' : match[3],
         } : undefined
       },

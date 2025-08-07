@@ -1,5 +1,5 @@
 # marked
-Files that i use for my website, extends how `marked.js` works
+Files that i use for my website, extends how `marked.js` works. These files might update at anytime without warning. I'll however try to not break everything during an update.
 
 ## Installation
 Clone
@@ -27,18 +27,32 @@ This requires the installation of [dayjs](https://day.js.org/) and some extensio
   dayjs.locale('en'); // NOTE: This can be changed out for your locale of choice.
 </script>
 ```
+Alternatively,
+```ts
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
+import localisedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(relativeTime);
+dayjs.extend(localisedFormat);
+dayjs.locale('en');
+````
 
 ## Usage
 ```js
 // ...
 
 let marked = new Marked();
-marked.use(`EXTENSION`); // replace extension with filename (no extension)
+marked.use(`${filename}()`); // replace filename with filename and remove `
 marked.parse('...');
 
 // ...
 ```
 
+Example:
+```ts
+marked.use(markedCenterText());
+```
 
 ### [markedCenterText.js](./markedCenterText.js)
 Puts text on heading lines to the center or right side of the object.
@@ -57,7 +71,7 @@ Wraps an image inside a div with the `img` class for styling. Also allows data t
 
 Recommended css:
 ```css
-// Forces the image to scroll horizontally instead of having the whole blog scroll horizontally.
+/** Forces the image to scroll horizontally instead of having the whole blog scroll horizontally. */
 div.img {
   width: 100%;
   overflow: auto;
@@ -109,6 +123,9 @@ Outputs (note, this is based off UTC time, the real results will be different ba
 - `some time ago` (this is dynamic, hence harder to show)
 - `04 March 2025 at 17:25` (none is same as 'f')
 - `<t:1741109128:W>` (put in code blocks to ignore the formatting)
+
+#### Optional parameter
+There is an optional `dayjs` argument. By default we use the parsed dayjs object and only fall back to the `globalThis.dayjs` if one is not found.
 
 ### [markedLocalLink.js](./markedLocalLink.js)
 
