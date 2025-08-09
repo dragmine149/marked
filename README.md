@@ -15,28 +15,8 @@ this repo.
 ## Setup
 Most files will work as-is. however the files listed below needs some more things before the can work.
 
-### [markedLocalTime.js](./markedLocalTime.js)
-This requires the installation of [dayjs](https://day.js.org/) and some extensions. The below code contains everything that is needed to make sure it works properly.
-```html
-<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/plugin/relativeTime.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/plugin/localizedFormat.js"></script>
-<script>
-  dayjs.extend(dayjs_plugin_relativeTime);
-  dayjs.extend(dayjs_plugin_localizedFormat);
-  dayjs.locale('en'); // NOTE: This can be changed out for your locale of choice.
-</script>
-```
-Alternatively,
-```ts
-import dayjs from "dayjs";
-import relativeTime from 'dayjs/plugin/relativeTime';
-import localisedFormat from 'dayjs/plugin/localizedFormat';
-
-dayjs.extend(relativeTime);
-dayjs.extend(localisedFormat);
-dayjs.locale('en');
-````
+### Marked.js
+I assume you have this setup already, otherwise why would you be here?
 
 ## Usage
 ```js
@@ -120,12 +100,14 @@ Outputs (note, this is based off UTC time, the real results will be different ba
 - `04 March 2025`
 - `04 March 2025 at 17:25`
 - `Tuesday 04 March 2025 at 17:25`
-- `some time ago` (this is dynamic, hence harder to show)
+- `some time ago` (this is dynamic, hence harder to show as github doesn't support these)
 - `04 March 2025 at 17:25` (none is same as 'f')
 - `<t:1741109128:W>` (put in code blocks to ignore the formatting)
 
-#### Optional parameter
-There is an optional `dayjs` argument. By default we use the parsed dayjs object and only fall back to the `globalThis.dayjs` if one is not found.
+#### Additional rules
+In order to add additional rules, you have to clone the file. Then just add another `addRUle` call.
+The rule take a condition (single letters otherwise regex WILL BREAK) and the callback.
+
 
 ### [markedLocalLink.js](./markedLocalLink.js)
 

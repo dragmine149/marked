@@ -1,32 +1,3 @@
-let __links = {};
-
-/**
- * @this HTMLAnchorElement The `a` tag referenced
- * @param {PointerEvent} event The event details
- * @returns
- */
-function clickListener(event) {
-  // pass to callback function
-  // console.log("link info: ", link.dataset.dest);
-  // console.log("link info: ", link.dataset);
-
-  // bypass everything in order for ctrl/shift click.
-  if (event.ctrlKey || event.shiftKey || event.metaKey || event.altKey || event.button === 1)
-    return true;
-
-  console.log("link info: ", this.href);
-  let result = this.callback(new URL(this.href));
-
-  // if we don't get a true result, assume something bad happened.
-  if (result !== true) {
-    console.log('Callback failed, auto redirect to original location.');
-    // window.location.href = link.dataset.dest;
-    return true;
-  }
-
-  event.preventDefault();
-  return false;
-}
 
 /**
 * Replaces the normal markdown link provided by marked.js with a custom link that allows execution of a custom function before redirection.
@@ -35,6 +6,34 @@ function clickListener(event) {
 */
 function markedLocalLink(callback = (url) => false, site = window.location.host) {
   let currentUrl = new URL(location.href);
+
+  /**
+   * @this HTMLAnchorElement The `a` tag referenced
+   * @param {PointerEvent} event The event details
+   * @returns
+   */
+  function clickListener(event) {
+    // pass to callback function
+    // console.log("link info: ", link.dataset.dest);
+    // console.log("link info: ", link.dataset);
+
+    // bypass everything in order for ctrl/shift click.
+    if (event.ctrlKey || event.shiftKey || event.metaKey || event.altKey || event.button === 1)
+      return true;
+
+    console.log("link info: ", this.href);
+    let result = this.callback(new URL(this.href));
+
+    // if we don't get a true result, assume something bad happened.
+    if (result !== true) {
+      console.log('Callback failed, auto redirect to original location.');
+      // window.location.href = link.dataset.dest;
+      return true;
+    }
+
+    event.preventDefault();
+    return false;
+  }
 
   return {
     hooks: {

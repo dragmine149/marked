@@ -1,9 +1,43 @@
-function markedLocalTime(local_dayjs) {
-  // console.log('dayjs: ', local_dayjs);
-  // console.log('dayjs: ', typeof dayjs);
-  let this_dayjs = local_dayjs === undefined ? dayjs : local_dayjs;
-  // let this_dayjs = typeof dayjs == "undefined" ? local_dayjs : dayjs;
-  // console.log('dayjs: ', this_dayjs);
+function markedLocalTime() {
+  // Date formatting written by T3 Chat (GPT-5 mini)
+  // Prettier printWidth: 80
+
+  // normalise constructors that might be given in seconds
+  function normaliseDate(d) {
+    const t = d instanceof Date ? d.getTime() : Number(d);
+    const ts = new Date(t < 1e12 ? t * 1000 : t);
+    return ts;
+  }
+
+  const locale = typeof navigator !== 'undefined' ? navigator.language : 'en-GB';
+
+  // helpers
+  function fmtParts(date, options) {
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  }
+
+  function twoDigit(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function relative(date) {
+    const now = new Date();
+    const diffSeconds = Math.round((date.getTime() - now.getTime()) / 1000);
+    const units = [
+      { u: 'year', s: 60 * 60 * 24 * 365 },
+      { u: 'month', s: 60 * 60 * 24 * 30 },
+      { u: 'day', s: 60 * 60 * 24 },
+      { u: 'hour', s: 60 * 60 },
+      { u: 'minute', s: 60 },
+      { u: 'second', s: 1 }
+    ];
+    const found = units.find(x => Math.abs(diffSeconds) >= x.s) ?? units[units.length - 1];
+    const value = Math.round(diffSeconds / found.s);
+    return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(value, found.u);
+  }
+
+
+  // Code to process rules and display.
 
   let rule = '';
   let conditions = {};
@@ -11,22 +45,45 @@ function markedLocalTime(local_dayjs) {
   /**
   * Add a rule to the system.
   * @param {string} condition The condition to listen for
-  * @param {Function} callback The function to call to trigger said condition
+  * @param {(d: Date) => string} callback The function to call to trigger said condition
   */
   function addRule(condition, callback) {
     rule += condition;
     conditions[condition] = callback;
   }
 
-  addRule('w', (d) => d.format('dddd'));
-  addRule('W', (d) => d.format('dddd HH:mm'));
-  addRule('t', (d) => d.format('HH:mm'));
-  addRule('T', (d) => d.format('HH:mm:ss'));
-  addRule('d', (d) => d.format('L'));
-  addRule('D', (d) => d.format('DD MMMM YYYY'));
-  addRule('f', (d) => d.format('DD MMMM YYYY [at] HH:mm'));
-  addRule('F', (d) => d.format('dddd DD MMMM YYYY [at] HH:mm'));
-  addRule('R', (d) => this_dayjs().isBefore(d) ? d.toNow() : d.fromNow());
+  // rules
+  addRule('w', d => fmtParts(normaliseDate(d), { weekday: 'long' }));
+  addRule('W', d => {
+    const dt = normaliseDate(d);
+    const day = fmtParts(dt, { weekday: 'long' });
+    const time = fmtParts(dt, { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `${day} ${time}`;
+  });
+  addRule('t', d => fmtParts(normaliseDate(d), { hour: '2-digit', minute: '2-digit', hour12: false }));
+  addRule('T', d => {
+    const dt = normaliseDate(d);
+    const hh = fmtParts(dt, { hour: '2-digit', hour12: false });
+    const mm = fmtParts(dt, { minute: '2-digit' });
+    const ss = twoDigit(dt.getSeconds());
+    return `${hh}:${mm}:${ss}`;
+  });
+  addRule('d', d => fmtParts(normaliseDate(d), { day: '2-digit', month: '2-digit', year: 'numeric' }));
+  addRule('D', d => fmtParts(normaliseDate(d), { day: '2-digit', month: 'long', year: 'numeric' }));
+  addRule('f', d => {
+    const dt = normaliseDate(d);
+    const datePart = fmtParts(dt, { day: '2-digit', month: 'long', year: 'numeric' });
+    const timePart = fmtParts(dt, { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `${datePart} at ${timePart}`;
+  });
+  addRule('F', d => {
+    const dt = normaliseDate(d);
+    const weekday = fmtParts(dt, { weekday: 'long' });
+    const datePart = fmtParts(dt, { day: '2-digit', month: 'long', year: 'numeric' });
+    const timePart = fmtParts(dt, { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `${weekday} ${datePart} at ${timePart}`;
+  });
+  addRule('R', d => relative(normaliseDate(d)));
 
   /**
    * Formats a timestamp using specified format rule
@@ -51,7 +108,7 @@ function markedLocalTime(local_dayjs) {
         return (match) ? {
           type: 'localtime',
           raw: match[0],
-          time: this_dayjs(Number(match[1]) * 1000),
+          time: new Date(Number(match[1]) * 1000),
           format: match[3] == undefined ? 'f' : match[3],
         } : undefined
       },
