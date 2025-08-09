@@ -159,8 +159,8 @@ Documentation-ish:
 You can do whatever once you have the url. However **you must return true**. As a failsafe / fallback mechnisum, any result that is not exactly `true` will automatically cause the link to redirect like it would normally do.
 This might cause some unexpected behaviours as your code will still run yet the page will get redirected. This failsafe is also in place for if a custom callback was not provided (as false is returned by default).
 
-#### Known issues (kinda):
-`SHIFT`/`CTRL`/`CMD`/`RIGHT` `CLICK`ing links won't work as excepted as you overwrite the link. Due to the return data i have to process them so will get around to fixing them at some point.
+Using modifiers (`ctrl/shift/meta/alt/cmd`) and all the clicks will still work as expected. Only left click (no modifiers) will call the custom javascript function.
+If you need the other options for whatever reason, then write your own plugin as your use case will probably be outside the scope of this plugin anyway.
 
 ## More Examples
 More examples can be viewed on my website: https://dragmine149.github.io in either the blog section or the project section.
