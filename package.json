@@ -1,0 +1,16 @@
+{
+	"name": "marked",
+	"private": true,
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"marked": "^17.0.5"
+	},
+	"scripts": {
+		"build": "bun "
+	}
+}

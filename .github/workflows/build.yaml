@@ -1,0 +1,21 @@
+name: Build and Publish JS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun build *.ts --outdir=dist --target=browser --sourcemap=inline
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git checkout -b js
+          git add -f dist/
+          git commit -m "Build JS" || echo "No changes to commit"
+          git push origin js --force
