@@ -12,6 +12,10 @@ $ git submodule add git@github.com:dragmine149/marked.git marked
 ```
 this repo.
 
+### Javascript or Typescript
+By default i do everything in typescript, hence the main part of this repo is in typescript. However if you want to pure js files, then just switch to the js branch. Whenever i update the ts files, the js files are also automatically
+updated. Do note however, they won't have as many comments as i can't fully work out how the build command works, nor do i want to at this moment. *and besides, i don't use that branch a lot anyway*
+
 ## Setup
 Most files will work as-is. however the files listed below needs some more things before the can work.
 
