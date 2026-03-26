@@ -22,20 +22,23 @@ Most files will work as-is. however the files listed below needs some more thing
 ### Marked.js
 I assume you have this setup already, otherwise why would you be here?
 
-## Usage
+## Example Usage
 ```js
 // ...
 
 let marked = new Marked();
-marked.use(`${filename}()`); // replace filename with filename and remove `
+marked.use(markedCenterText());
 marked.parse('...');
 
 // ...
 ```
-
-Example:
 ```ts
+// ...
+import { markedCenterText } from "./markedCenterText";
+let marked = new Marked();
 marked.use(markedCenterText());
+marked.parse('...');
+// ...
 ```
 
 ### [markedCenterText.js](./markedCenterText.js)
@@ -49,6 +52,12 @@ text
 ```
 
 `!c` Centers it, `!r` puts it on the right.
+
+This also works on lines classified as `Paragraph`
+```md
+# !c This centers it
+!r and this line is to the right
+```
 
 ### [markedImprovedImage.js](./markedImprovedImage.js)
 Wraps an image inside a div with the `img` class for styling. Also allows data to be gathered from a different server instead.
@@ -113,9 +122,15 @@ Outputs (note, this is based off UTC time, the real results will be different ba
     The rule take a condition (single letters otherwise regex WILL BREAK) and the callback.
 - Time is based off the user local time provided by `navigator.language`, if this doesn't exist it will fall back to `en-GB` aka UTC time.
 
-### [markedLocalLink.js](./markedLocalLink.js)
+#### Discord-relationship
+This system runs exactly the same as it does in discord, if you just copy and paste the above list they will format in discord as expected. The only ones to not format correct are as follows:
+- `w`
+- `W`
 
-#### WARNING: This could cause some confusion with how the link works. Please proceduce with caution!
+### [markedLocalLink.js](./markedLocalLink.js)
+> [!warning] Confusion potential
+> *as a theory*, most people expect the link to visablly do something in the page upon clicking. By messing around with this, the whole click functionality of the link is disabled as long as true is returned.
+> Please be careful and make sure everything does something.
 
 Allows links that direct to your own site to run custom js functions instead of redirecting.
 
