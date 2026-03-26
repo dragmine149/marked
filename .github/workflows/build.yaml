@@ -3,6 +3,7 @@ name: Build and Publish JS
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
