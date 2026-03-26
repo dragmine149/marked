@@ -105,9 +105,9 @@ Outputs (note, this is based off UTC time, the real results will be different ba
 - `<t:1741109128:W>` (put in code blocks to ignore the formatting)
 
 #### Additional rules
-In order to add additional rules, you have to clone the file. Then just add another `addRUle` call.
-The rule take a condition (single letters otherwise regex WILL BREAK) and the callback.
-
+- In order to add additional rules, you have to clone the file. Then just add another `addRUle` call.
+    The rule take a condition (single letters otherwise regex WILL BREAK) and the callback.
+- Time is based off the user local time provided by `navigator.language`, if this doesn't exist it will fall back to `en-GB` aka UTC time.
 
 ### [markedLocalLink.js](./markedLocalLink.js)
 

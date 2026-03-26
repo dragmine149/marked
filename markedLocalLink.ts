@@ -1,18 +1,19 @@
+import { MarkedExtension } from "marked";
 
 /**
-* Replaces the normal markdown link provided by marked.js with a custom link that allows execution of a custom function before redirection.
-* @param {(url: URL) => boolean} callback What to do upon clicking this link. NOTE: If this does not return true, the default (link redirect) will be done as well.
-* @param {string} site Your site host (new URL(location).host). Designed for when running on localhost:8080.
+* Replace the normal markdown link provided by marked.js with a custom link that allows execution of a custom function before redirection.
+* @param callback What to do upon clicking this link. NOTE: If this does not return true, the default (link redirect) will be done as well.
+* @param site Your site host (new URL(location).host). Designed for when running on localhost:8080.
 */
-function markedLocalLink(callback = (url) => false, site = window.location.host) {
-  let currentUrl = new URL(location.href);
+export function markedLocalLink(callback: (url: URL) => boolean = (_) => false, site = window.location.host): MarkedExtension {
+  const currentUrl = new URL(location.href);
 
   /**
    * @this HTMLAnchorElement The `a` tag referenced
-   * @param {PointerEvent} event The event details
+   * @param event The event details
    * @returns
    */
-  function clickListener(event) {
+  function clickListener(this: HTMLAnchorElement, event: PointerEvent) {
     // pass to callback function
     // console.log("link info: ", link.dataset.dest);
     // console.log("link info: ", link.dataset);
@@ -22,7 +23,7 @@ function markedLocalLink(callback = (url) => false, site = window.location.host)
       return true;
 
     console.log("link info: ", this.href);
-    let result = this.callback(new URL(this.href));
+    const result = callback(new URL(this.href));
 
     // if we don't get a true result, assume something bad happened.
     if (result !== true) {
@@ -37,24 +38,20 @@ function markedLocalLink(callback = (url) => false, site = window.location.host)
 
   return {
     hooks: {
-
       // this gets called after everything is done
       postprocess(html) {
-
         // requestAnimationFrame makes us wait until the document has been rendered.
         // this is important, because if we don't wait we will just be working with a string which we can't really do.
         requestAnimationFrame(() => {
-          document.querySelectorAll('a[callback]').forEach(
-            /** @param {HTMLAnchorElement} link*/
-            link => {
-              link.callback = callback;
+          document.querySelectorAll('a[callback]').forEach(l => {
+            const link = l as HTMLAnchorElement;
 
-              // remove the previous listener just in case stuff breaks...
-              link.removeEventListener('click', clickListener);
+            // remove the previous listener just in case stuff breaks...
+            link.removeEventListener('click', clickListener);
 
-              // add our own custom listener.
-              link.addEventListener('click', clickListener);
-            });
+            // add our own custom listener.
+            link.addEventListener('click', clickListener);
+          });
         });
 
         // we don't care about the html, hence we can just throw it back.
@@ -63,23 +60,18 @@ function markedLocalLink(callback = (url) => false, site = window.location.host)
     },
 
     renderer: {
-      link(tokens) {
-        let { href, title, text } = tokens;
-
-        // get and compare the urls.
-        // let url = new URL(href);
-
+      link({ href, title, text }) {
         // checks for a valid url, if nothing is valid return false to allow the fallback (previous) to work.
         let url;
         try {
           if (!href) return false; // if href is empty, return null
           url = new URL(href, currentUrl); // convert relative URLs to absolute
-        } catch (e) {
+        } catch {
           console.error('Invalid URL:', href);
           return false;
         }
 
-        let local = url.host === currentUrl.host ||
+        const local = url.host === currentUrl.host ||
           url.host.includes("localhost") || // for running local server
           url.host === site; // for running local server with links to your actual site.
 
