@@ -41,7 +41,32 @@ marked.parse('...');
 // ...
 ```
 
-### [markedCenterText.js](./markedCenterText.js)
+### PostedMarkedExtensions
+> [!important] Unsafe code execution ahead
+> As much as i would like to mark this as safe, you are pretty much giving bypassing part of the security that comes with using markdown. Use at caution.
+>
+> Any extension included in here will be marked with PostedMarkedExtension if used.
+
+Unlike the typical markdown extension returning `MarkedExtension<string, string>` some of the extensions in here return the custom type `PostedMarkedExtension<string, string>`.
+*The full implementation can be seen here: [./marked.ts](./marked.ts)*
+
+`PostedMarkedExtension` is an extension of the typical `MarkedExtension` with the additional functions as listed below. All functions are optional even if you do decided to use `PostedMarkedExtension` over the default type.
+#### `postprocess(obj: HTMLElement)`
+Designed for **after** the markdown has been sent to the HTML. Aka when doing something like:
+```ts
+let obj = document.getElementById("some-random-obj-for-markdown");
+let marked = new Marked();
+/** Some extension which returns `PostedMarkedExtension` */
+let ext = some_random_extension();
+obj.innerHTML = marked.use(some_random_extension);
+ext.postprocess(obj)
+```
+The goal is, to give the extension that tiny bit of extra functionality by allowing it access to the whole object. For example, adding event listeners, etc.
+
+##### Why can't this be done in normal `hooks.postprocess`?
+ShadowObjects, and limited functionality. Querying is the best we can do even with an object, and shadowObjects means that `document.querySelectorAll` doesn't reach inside them by default.
+
+### [markedCenterText](./markedCenterText.ts)
 Puts text on heading lines to the center or right side of the object.
 
 Usage Examples:
@@ -59,7 +84,7 @@ This also works on lines classified as `Paragraph`
 !r and this line is to the right
 ```
 
-### [markedImprovedImage.js](./markedImprovedImage.js)
+### [markedImprovedImage](./markedImprovedImage.ts)
 Wraps an image inside a div with the `img` class for styling. Also allows data to be gathered from a different server instead.
 
 Recommended css:
@@ -77,7 +102,7 @@ To get the image from a different server
 marked.use(markedImprovedImage(`SERVER_URL (str)`));
 ```
 
-### [markedLocalTime.js](./markedLocalTime.js)
+### [markedLocalTime](./markedLocalTime.ts)
 Display a time in the user local time zone. The time used is that of epoch (s). Recommended converter here: https://www.epochconverter.com/
 
 Usage:
@@ -127,7 +152,7 @@ This system runs exactly the same as it does in discord, if you just copy and pa
 - `w`
 - `W`
 
-### [markedLocalLink.js](./markedLocalLink.js)
+### [markedLocalLink](./markedLocalLink.ts)
 > [!warning] Confusion potential
 > *as a theory*, most people expect the link to visablly do something in the page upon clicking. By messing around with this, the whole click functionality of the link is disabled as long as true is returned.
 > Please be careful and make sure everything does something.
@@ -162,6 +187,28 @@ This might cause some unexpected behaviours as your code will still run yet the 
 
 Using modifiers (`ctrl/shift/meta/alt/cmd`) and all the clicks will still work as expected. Only left click (no modifiers) will call the custom javascript function.
 If you need the other options for whatever reason, then write your own plugin as your use case will probably be outside the scope of this plugin anyway.
+
+### [markedEditableCheckbox](./markedEditableCheckbox.ts) `PostedMarkedExtension`
+Checkboxs can now be made to be configurable with some very small simple changes. No longer will HTML be needed to write a settings screen, it can all be done in markdown.
+```markdown
+- [ ][some-id] some-text
+- [X][some-checked-id] some-checked-text
+```
+They act mostly the same way in accordance to typical checkboxes, but with the extra `[]` *which need to be touching*. These brackets give the `<input>` it's own ID *based on the value* which can then later be used to query said checkbox.
+
+All checkboxes will be assigned the custom callback function on click event when `markedEditableCheckbox().postprocess()` is called.
+
+Usage:
+```ts
+let marked, obj = /** ... */
+
+let ext = markedEditableCheckbox((id: string, state: boolean) => {
+  alert(`${id} is ${state}`);
+});
+marked.use(ext);
+obj.innerHTML = marked.parse();
+ext.postprocess(obj);
+```
 
 ## More Examples
 More examples can be viewed on my website: https://dragmine149.github.io in either the blog section or the project section.
