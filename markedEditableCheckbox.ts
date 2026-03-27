@@ -8,7 +8,7 @@ interface CheckboxToken extends Tokens.Checkbox {
   raw: string;
   id: string;
   checked: boolean;
-  check_info: Token[];
+  label: Token[],
 }
 
 
@@ -42,7 +42,7 @@ export function markedEditableCheckbox(callback: (state: boolean, id: string) =>
             raw: match[0],
             id,
             checked,
-            check_info: this.lexer.inlineTokens(match[3].trim()),
+            label: this.lexer.inlineTokens(match[3].trim()),
           };
         },
         renderer(t): string {
@@ -55,30 +55,11 @@ export function markedEditableCheckbox(callback: (state: boolean, id: string) =>
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;");
 
-          return `<input type="checkbox" id="${escapedId}"${checkedAttr} callback>`;
+          return `<input type="checkbox" id="${escapedId}"${checkedAttr} callback><label for="${escapedId}">${this.parser.parseInline(token.label)}</label>`;
         },
-        childTokens: ['check_info']
+        childTokens: ['label'],
       },
     ],
-
-    renderer: {
-      listitem({ text }) {
-        // console.log("marked_editable_checkbox: listitem_render text: ", text);
-
-        const checkboxMatch = text.match(
-          /^<input type="checkbox"[^>]*data-checkbox-id="([^"]*)"[^>]*>/,
-        );
-
-        if (!checkboxMatch) {
-          return false;
-        }
-
-        const afterCheckbox = text.slice(checkboxMatch[0].length).trim();
-        const labelContent = this.parser.parseInline(afterCheckbox);
-
-        return `<li>${checkboxMatch[0]}<label for="${checkboxMatch[1].replace(/"/g, "&quot;")}">${labelContent}</label></li>`;
-      },
-    },
     postprocess(obj: HTMLElement) {
       obj.querySelectorAll('input[callback]').forEach(i => {
         const input = i as HTMLInputElement;
