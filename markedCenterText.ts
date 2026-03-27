@@ -1,4 +1,4 @@
-import type { MarkedExtension, Token } from "marked";
+import type { MarkedExtension, Renderer, Token } from "marked";
 
 export type HeadingCenter = {
   type: string
@@ -31,6 +31,13 @@ export type ParagraphCenter = {
  * ```
  */
 export function markedCenterText(): MarkedExtension {
+  function align_content(renderer: Renderer<string, string>, tokens: Token[], text: string, align?: string) {
+    return {
+      align: align ? ` style="text-align: ${align};"` : '',
+      content: align && tokens.length > 1 ? renderer.parser.parseInline(tokens.slice(1)) : text
+    }
+  }
+
   return {
     hooks: {
       processAllTokens(tokens) {
@@ -67,17 +74,13 @@ export function markedCenterText(): MarkedExtension {
       }
     },
     renderer: {
-      heading({ meta, depth, tokens }: HeadingCenter) {
-        tokens.shift();
-        const align = meta?.align;
-        const alignAttr = align ? ` style="text-align: ${align};"` : '';
-        return `<h${depth}${alignAttr}>${this.parser.parseInline(tokens)}</h${depth}>`;
+      heading({ meta, depth, tokens, text }: HeadingCenter) {
+        const { content, align } = align_content(this, tokens, text, meta?.align);
+        return `<h${depth}${align}>${content}</h${depth}>`;
       },
-      paragraph({ meta, tokens }: ParagraphCenter) {
-        tokens.shift();
-        const align = meta?.align;
-        const alignAttr = align ? ` style="text-align: ${align};"` : '';
-        return `<p${alignAttr}>${this.parser.parseInline(tokens)}</p>`;
+      paragraph({ meta, tokens, text }: ParagraphCenter) {
+        const { content, align } = align_content(this, tokens, text, meta?.align);
+        return `<p${align}>${content}</p>`;
       }
     },
   };
