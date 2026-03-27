@@ -213,5 +213,24 @@ obj.innerHTML = marked.parse();
 ext.postprocess(obj);
 ```
 
+### [markedDropdown](./markedDropdown.ts) `PostedMarkedExtension`
+Renders a dropdown into the HTML. Doesn't give as many features as [select](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select) gives, but the basics are there.
+
+Usage:
+```markdown
+[>][some.id]["some-option-a", "some-option-b", "some-option-c"]
+```
+```ts
+let marked, obj = /** ... */
+
+let ext = markedDropdown((id: string, value: string) => {
+  alert(`${id} is ${value}`);
+});
+marked.use(ext);
+obj.innerHTML = marked.parse();
+ext.postprocess(obj);
+```
+
+
 ## More Examples
 More examples can be viewed on my website: https://dragmine149.github.io in either the blog section or the project section.
