@@ -152,7 +152,7 @@ This system runs exactly the same as it does in discord, if you just copy and pa
 - `w`
 - `W`
 
-### [markedLocalLink](./markedLocalLink.ts)
+### [markedLocalLink](./markedLocalLink.ts) `PostedMarkedExtension`
 > [!warning] Confusion potential
 > *as a theory*, most people expect the link to visablly do something in the page upon clicking. By messing around with this, the whole click functionality of the link is disabled as long as true is returned.
 > Please be careful and make sure everything does something.
@@ -168,10 +168,13 @@ The markdown input is much the same, just provide a link how you would normally 
 
 Example usage
 ```js
-marked.use(markedLocalLink((url) => {
+let ext = markedLocalLink((url) => {
   alert(url);
   return true;
 }), "example.org");
+marked.use(ext);
+obj.innerHTML = marked.parse(/** some content */);
+ext.postprocess(obj);
 ```
 
 To explain the above example. As long as the link clicked follows one of the three rules above, the user will get alerted instead of redirected. This can be useful in (say my website for example), where you don't want the user

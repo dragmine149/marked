@@ -1,11 +1,11 @@
-import { MarkedExtension } from "marked";
+import { PostedMarkedExtension } from "./marked";
 
 /**
 * Replace the normal markdown link provided by marked.js with a custom link that allows execution of a custom function before redirection.
 * @param callback What to do upon clicking this link. NOTE: If this does not return true, the default (link redirect) will be done as well.
 * @param site Your site host (new URL(location).host). Designed for when running on localhost:8080.
 */
-export function markedLocalLink(callback: (url: URL) => boolean = (_) => false, site = window.location.host): MarkedExtension {
+export function markedLocalLink(callback: (url: URL) => boolean = (_) => false, site = window.location.host): PostedMarkedExtension {
   const currentUrl = new URL(location.href);
 
   /**
@@ -37,26 +37,16 @@ export function markedLocalLink(callback: (url: URL) => boolean = (_) => false, 
   }
 
   return {
-    hooks: {
-      // this gets called after everything is done
-      postprocess(html) {
-        // requestAnimationFrame makes us wait until the document has been rendered.
-        // this is important, because if we don't wait we will just be working with a string which we can't really do.
-        requestAnimationFrame(() => {
-          document.querySelectorAll('a[callback]').forEach(l => {
-            const link = l as HTMLAnchorElement;
+    postprocess(obj) {
+      obj.querySelectorAll('a[callback]').forEach(l => {
+        const link = l as HTMLAnchorElement;
 
-            // remove the previous listener just in case stuff breaks...
-            link.removeEventListener('click', clickListener);
+        // remove the previous listener just in case stuff breaks...
+        link.removeEventListener('click', clickListener);
 
-            // add our own custom listener.
-            link.addEventListener('click', clickListener);
-          });
-        });
-
-        // we don't care about the html, hence we can just throw it back.
-        return html;
-      }
+        // add our own custom listener.
+        link.addEventListener('click', clickListener);
+      });
     },
 
     renderer: {
