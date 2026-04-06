@@ -12,10 +12,10 @@ interface CheckboxToken extends Tokens.Checkbox {
 }
 
 
-export function markedEditableCheckbox(callback: (state: boolean, id: string) => void = (_) => { }): PostedMarkedExtension {
+export function markedEditableCheckbox(callback: (id: string, state: boolean) => void = (_) => { }): PostedMarkedExtension {
   function clickListener(this: HTMLInputElement, _event: PointerEvent) {
     // console.warn("EDITABLE MARKDOWN CLICKED ON: ", this.id, " MADE INTO: ", this.checked);
-    callback(this.checked, this.id);
+    callback(this.id, this.checked);
   }
 
   return {

@@ -8,10 +8,10 @@ interface DropdownToken extends Tokens.Generic {
   options: string[],
 }
 
-export function markedDropdown(callback: (value: string, id: string) => void = () => { }): PostedMarkedExtension {
+export function markedDropdown(callback: (id: string, value: string) => void = () => { }): PostedMarkedExtension {
   function clickListener(this: HTMLInputElement, _event: Event) {
     // console.warn("EDITABLE MARKDOWN CLICKED ON: ", this.id, " MADE INTO: ", this.checked);
-    callback(this.value, this.id);
+    callback(this.id, this.value);
   }
 
   return {
