@@ -1,6 +1,6 @@
 import { MarkedExtension } from "marked";
 
-import { markedCenterText } from "./markedCenterText";
+import { markedAlignment } from "./markedAlignment";
 import { markedDropdown } from "./markedDropdown";
 import { markedEditableCheckbox } from "./markedEditableCheckbox";
 import { markedImprovedImage } from "./markedImprovedImage";
@@ -11,4 +11,4 @@ export interface PostedMarkedExtension<ParserOutput = string, RendererOutput = s
   postprocess?(obj: HTMLElement): void;
 }
 
-export { markedCenterText, markedDropdown, markedEditableCheckbox, markedImprovedImage, markedLocalLink, markedLocalTime }
+export { markedAlignment, markedDropdown, markedEditableCheckbox, markedImprovedImage, markedLocalLink, markedLocalTime }

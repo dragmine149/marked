@@ -33,10 +33,10 @@ marked.parse('...');
 // ...
 ```
 ```ts
-// ...
-import { markedCenterText } from "./markedCenterText";
+// something like this or whatever, you can figure it out.
+import { markedAlignment } from "./marked/marked.ts";
 let marked = new Marked();
-marked.use(markedCenterText());
+marked.use(markedAlignment());
 marked.parse('...');
 // ...
 ```
@@ -66,7 +66,7 @@ The goal is, to give the extension that tiny bit of extra functionality by allow
 ##### Why can't this be done in normal `hooks.postprocess`?
 ShadowObjects, and limited functionality. Querying is the best we can do even with an object, and shadowObjects means that `document.querySelectorAll` doesn't reach inside them by default.
 
-### [markedCenterText](./markedCenterText.ts)
+### [markedAlignment](./markedCenterText.ts)
 Puts text on heading lines to the center or right side of the object.
 
 Usage Examples:
@@ -83,6 +83,14 @@ This also works on lines classified as `Paragraph`
 # !c This centers it
 !r and this line is to the right
 ```
+
+Inline styling will also take affect, hence
+```md
+# !r *Some **STYLE** on this text*
+```
+Will also style like normal, whilst being on the right side.
+
+`!{whatever}` will not show up on the final render, unless it's an invalid code. Then it's left to other extensions to deal with. *before most likely showing up on the final render*
 
 ### [markedImprovedImage](./markedImprovedImage.ts)
 Wraps an image inside a div with the `img` class for styling. Also allows data to be gathered from a different server instead.
