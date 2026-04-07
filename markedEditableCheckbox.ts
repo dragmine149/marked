@@ -1,10 +1,8 @@
-// marked-checkbox-extension.ts
-// (Mostly) Written by Kimi K2.5 (T3 Chat), modified afterwards
-import { Token, Tokens } from "marked";
+import { Token } from "marked";
 import { PostedMarkedExtension } from "./marked";
 
-interface CheckboxToken extends Tokens.Checkbox {
-  type: "checkbox";
+interface CheckboxToken {
+  type: "editableCheckbox";
   raw: string;
   id: string;
   checked: boolean;
@@ -21,7 +19,7 @@ export function markedEditableCheckbox(callback: (id: string, state: boolean) =>
   return {
     extensions: [
       {
-        name: "checkbox",
+        name: "editableCheckbox",
         level: "inline",
         start(src) {
           return src.match(/\[(.*)\]\[(.*)\]/)?.index;
@@ -38,7 +36,7 @@ export function markedEditableCheckbox(callback: (id: string, state: boolean) =>
           // console.log("marked_editable_checkbox: rest: ", match);
 
           return {
-            type: "checkbox",
+            type: "editableCheckbox",
             raw: match[0],
             id,
             checked,
