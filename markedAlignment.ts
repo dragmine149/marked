@@ -13,7 +13,7 @@ export function markedAlignment(): MarkedExtension {
     extensions: [{
       name: "alignment",
       level: "block",
-      start(src: string) {
+      start(src) {
         return src.match(/^(?:#{1,6}\s+)?!([cr])\s+/)?.index;
       },
       tokenizer(src): AlignmentToken | undefined {
