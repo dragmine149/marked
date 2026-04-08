@@ -2,6 +2,28 @@ import { PostedMarkedExtension } from "./marked";
 
 /**
 * Replace the normal markdown link provided by marked.js with a custom link that allows execution of a custom function before redirection.
+*
+* # Markdown Usage
+*
+* N/A. The markdown is exactly the same.
+*
+*
+* # PostedMarkedExtension
+*
+* In order for full functionality, it is recommended to run the `postprocess` function as returned after the markdown has been rendered to the DOM.
+* Example
+* ```ts
+* // ...
+* const extension = markedLocalLink();
+* marked.use(extension);
+* obj.innerHTML = marked.parse(text);
+* extension.postprocess(obj);
+* // ...
+* ```
+* The above call is recomened as input events can't be generated for strings, hence we have to do it afterwards.
+*
+* # Parameters
+*
 * @param callback What to do upon clicking this link. NOTE: If this does not return true, the default (link redirect) will be done as well.
 * @param site Your site host (new URL(location).host). Designed for when running on localhost:8080.
 */

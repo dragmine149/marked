@@ -7,6 +7,9 @@ import { markedImprovedImage } from "./markedImprovedImage";
 import { markedLocalLink } from "./markedLocalLink";
 import { markedLocalTime } from "./markedLocalTime";
 
+/**
+ * Extension of {@link MarkedExtension} to allow for support of the `postprocess` function.
+ */
 export interface PostedMarkedExtension<ParserOutput = string, RendererOutput = string> extends MarkedExtension<ParserOutput, RendererOutput> {
   postprocess?(obj: HTMLElement): void;
 }

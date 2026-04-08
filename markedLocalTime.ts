@@ -11,6 +11,11 @@ function twoDigit(number: number) {
   return String(number).padStart(2, '0');
 }
 
+/**
+ * Calculate the amount to now and format the it accordingly.
+ * @param date The date we want to calculate from.
+ * @returns The formatted string.
+ */
 function relative(date: Date) {
   const now = new Date();
   const diffSeconds = Math.round((date.getTime() - now.getTime()) / 1000);
@@ -39,12 +44,48 @@ const conditions: Record<string, (d: Date) => string> = {};
 * @param {(d: Date) => string} callback The function to call to trigger said condition
 */
 function addRule(condition: string, callback: (d: Date) => string) {
-  rule += condition;
+  const conditioned_rule = `${condition}|`;
+  if (!rule.includes(conditioned_rule)) rule += conditioned_rule;
   conditions[condition] = callback;
 }
 
-
-export function markedLocalTime(): MarkedExtension {
+/**
+ * Display a timestamp in the viewers local time. Kinda like discord timestamps.
+ *
+ * Timestamp used is in epoch, although any `number * 1000` accepted by {@link Date} should be fine. If you need a converter i recommend: https://www.epochconverter.com/
+ *
+ * # Markdown Usage
+ *
+ * ```md
+ * Raw Markdown       -> HTML Output
+ * <t:1741109128:w>   -> Tuesday
+ * <t:1741109128:W>   -> Tuesday 17:25
+ * <t:1741109128:t>   -> 17:25
+ * <t:1741109128:T>   -> 17:25:28
+ * <t:1741109128:d>   -> 04/03/2025
+ * <t:1741109128:D>   -> 04 March 2025
+ * <t:1741109128:f>   -> 04 March 2025 at 17:25
+ * <t:1741109128:F>   -> Tuesday 04 March 2025 at 17:25
+ * <t:1741109128:R>   -> some time ago (this is dynamic)
+ * <t:1741109128>     -> 04 March 2025 at 17:25 (none is same as 'f')
+ * `<t:1741109128:W>` -> <t:1741109128:W> (put in code blocks to ignore the formatting)
+ * ```
+ *
+ * The overall format is `<t:TIMESTAMP:FORMAT>`
+ *
+ * ## Discord-relationship
+ * This system runs exactly the same as it does in discord, if you just copy and paste the above list they will format in discord as expected. The only ones to not format correct are as follows:
+ * - `w`
+ * - `W`
+ *
+ * # Parameters
+ *
+ * @param extra_rules Allow for the introduction of even more rules than not original included.
+ *     - Rules can be any length. However try to keep it simple.
+ *     - The string returned is the final form.
+ *     - Built-in rules can be overwritten. Except for the blank rule which always returns the `f` rule.
+ */
+export function markedLocalTime(extra_rules?: Record<string, (d: Date) => string>): MarkedExtension {
   addRule('w', d => fmtParts(d, { weekday: 'long' }));
   addRule('W', d => {
     const day = fmtParts(d, { weekday: 'long' });
@@ -72,6 +113,14 @@ export function markedLocalTime(): MarkedExtension {
     return `${weekday} ${datePart} at ${timePart}`;
   });
   addRule('R', d => relative(d));
+  Object.entries(extra_rules ?? {}).forEach(([rule, callback]) => {
+    if (rule.length > 1) {
+      console.warn(`Ignoring rule "${rule}" for markedLocalTime because the length can only be one char long.`);
+      return;
+    }
+    addRule(rule, callback);
+  });
+  console.log(rule);
 
   /**
    * Formats a timestamp using specified format rule
@@ -90,7 +139,7 @@ export function markedLocalTime(): MarkedExtension {
         return start === undefined || (start > 0 && src[start - 1] === '`') ? undefined : start;
       },
       tokenizer(src, _) {
-        const regex = RegExp(`^<t:(\\d*)(:([${rule}]))?>`);
+        const regex = RegExp(`^<t:(\\d*)(:(${rule}))?>`);
         const match = regex.exec(src);
 
         return (match) ? {

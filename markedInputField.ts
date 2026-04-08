@@ -32,6 +32,53 @@ interface CheckParameters {
   checked: boolean,
 }
 
+/**
+ * Allow for multiple types of input fields to be supported.
+ *
+ * Currently supported: [ range, checkbox ]
+ *
+ * # Markdown Usage
+ *
+ * ```md
+ * [ ][checkbox-id] *checkbox label*
+ * [range, 100, 500, 100, 20][range-id]
+ * ```
+ *
+ * ## Options
+ * All input fields use a variation of the double `[]` combo. The first `[]` gives information on the element whilst the second `[]` gives the id of the element.
+ *
+ * ### Checkbox
+ * Format: `[checked?][id]`.
+ * - Checked is optional and can be either `x` or `X` just like normal markdown. If you want it to be optional, make it a space character (`[ ]`) instead.
+ * - As a downside, editable checkboxes can be used whilst not in the official list format.
+ *
+ * ### Range
+ * Format: `[range, min, max, default?, step?][id]`
+ * - `range` is required in plain text. Everything in the first `[]` must be separated by commas.
+ * - `min`, `max`, `default`, `step` if provided should be numbers, that which {@link Number()} can parse.
+ * - `default` will resort to `min` if not provided.
+ * - `step` will resort to `auto` if not provided.
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range for more information related to this.
+ *
+ *
+ * # PostedMarkedExtension
+ *
+ * In order for full functionality, it is recommended to run the `postprocess` function as returned after the markdown has been rendered to the DOM.
+ * Example
+ * ```ts
+ * // ...
+ * const extension = markedInputField();
+ * marked.use(extension);
+ * obj.innerHTML = marked.parse(text);
+ * extension.postprocess(obj);
+ * // ...
+ * ```
+ * The above call is recomened as input events can't be generated for strings, hence we have to do it afterwards.
+ *
+ * # Parameters
+ *
+ * @param callback Function to call upon a value being changed. Does not expect a response back.
+ */
 export function markedInputField(callback: (id: string, event: InputEvent) => void = () => { }): PostedMarkedExtension {
   function inputListener(this: HTMLInputElement, event: Event) {
     callback(this.id, event as InputEvent);

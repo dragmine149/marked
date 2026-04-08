@@ -8,6 +8,22 @@ interface AlignmentToken {
   raw: string;
 }
 
+/**
+ * Custom extension to align content in a different way than on the left.
+ *
+ * # Markdown Usage
+ * ```md
+ * # !r This is a heading on the right.
+ * !c This text is now centered
+ * ```
+ *
+ * Only `!c` and `!r` are supported, anything else will just be left to the next extension to sort out.
+ *
+ * This only affects the position, styling will also work as expected
+ * ```md
+ * # !r So this would be a heading on the *right* with *italic* text
+ * ```
+ */
 export function markedAlignment(): MarkedExtension {
   return {
     extensions: [{
