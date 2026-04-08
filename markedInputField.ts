@@ -13,7 +13,7 @@ type InputToken = {
       input_type: "range";
       parameters: RangeParameters;
     } | {
-      input_type: Exclude<Exclude<string, "range">, "checkbox">;
+      input_type: Exclude<string, "range" | "checkbox">;
       parameters: undefined;
     } | {
       input_type: "checkbox";
@@ -70,6 +70,7 @@ export function markedInputField(callback: (id: string, event: InputEvent) => vo
             };
             break;
           }
+
           case " ":
           case "X":
           case "x": {
@@ -79,6 +80,7 @@ export function markedInputField(callback: (id: string, event: InputEvent) => vo
             }
             break;
           }
+
           default:
             return undefined;
         }
@@ -88,21 +90,19 @@ export function markedInputField(callback: (id: string, event: InputEvent) => vo
       childTokens: ['label'],
       renderer(t) {
         const token = t as InputToken;
+
         let result = `<input type="${token.input_type}" id="${token.id}" callback`;
         switch (token.input_type) {
           case "range":
             result = `${result} min="${token.parameters!.minimum}" max="${token.parameters!.maximum}" value="${token.parameters!.default}" step="${token.parameters!.step}"`;
             break;
           case "checkbox":
-            result = `${result} ${token.parameters?.checked ? "checked" : ""}`;
+            result = `${result} ${token.parameters!.checked ? "checked" : ""}`;
             break;
           default: break;
         }
-        let label = '';
-        if (token.label.length > 0) {
-          label = `<label for="${token.id}">${this.parser.parseInline(token.label)}</label>`;
-        }
 
+        const label = token.label.length > 0 ? `<label for="${token.id}">${this.parser.parseInline(token.label)}</label>` : '';
         return `${result}></input>${label}`;
       }
     }],
