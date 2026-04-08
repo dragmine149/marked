@@ -59,7 +59,7 @@ export function markedEditableCheckbox(callback: (id: string, state: boolean) =>
       },
     ],
     postprocess(obj: HTMLElement) {
-      obj.querySelectorAll('input[callback]').forEach(i => {
+      obj.querySelectorAll('input[type="checkbox"][callback]').forEach(i => {
         const input = i as HTMLInputElement;
 
         // remove the previous listener just in case stuff breaks...
