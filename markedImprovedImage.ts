@@ -40,9 +40,10 @@ export function markedImprovedImage(useRemote?: URL): MarkedExtension {
   return {
     renderer: {
       image({ href, text, title }) {
+        console.warn({ text });
         return `
         <div class="img">
-          <img src="${useRemote ? `${useRemote}/${href}` : href}", alt="${text}" title="${title}"">
+          <img src="${useRemote ? `${useRemote}/${href}` : href}"${text ? `alt="${text}"` : ''}${title ? `title="${title}"` : ''}">
         </div>
         `
       }
